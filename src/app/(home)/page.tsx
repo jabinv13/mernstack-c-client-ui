@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <>
-      <section>
+      <section className="bg-white">
         <div className="container flex items-center justify-between py-24">
           <div>
             <h1 className="text-7xl font-black font-sans leading-2">
