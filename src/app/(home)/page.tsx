@@ -1,46 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
-import ProductCard, { Product } from "./components/ProductCard";
-import { Category } from "@/lib/types";
-
-const products: Product[] = [
-  {
-    id: "1",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "2",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "3",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "4",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "5",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-];
+import ProductCard from "./components/ProductCard";
+import { Category, Product } from "@/lib/types";
 
 export default async function Home() {
   const categoryResponse = await fetch(
@@ -57,6 +19,17 @@ export default async function Home() {
   }
 
   const categories: Category[] = await categoryResponse.json();
+
+  //add pagination
+
+  const productResponse = await fetch(
+    //dynamical tennat id
+    `${process.env.BACKEND_URL}/api/catalog/products?Page=100&tenantId=9`
+  );
+
+  const products: { data: Product[] } = await productResponse.json();
+
+  console.log(products);
 
   return (
     <>
@@ -86,7 +59,7 @@ export default async function Home() {
       </section>
       <section>
         <div className="container py-12 ">
-          <Tabs defaultValue="pizza">
+          <Tabs defaultValue={categories[0]._id}>
             <TabsList>
               {categories.map((category) => {
                 return (
@@ -100,20 +73,21 @@ export default async function Home() {
                 );
               })}
             </TabsList>
-            <TabsContent value="pizza">
-              <div className="grid grid-cols-4 gap-6 mt-6 ">
-                {products.map((product) => (
-                  <ProductCard product={product} key={product.id} />
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="beverages">
-              <div className="grid grid-cols-4 gap-6 mt-6 ">
-                {products.map((product) => (
-                  <ProductCard product={product} key={product.id} />
-                ))}
-              </div>
-            </TabsContent>
+            {categories.map((category) => {
+              return (
+                <TabsContent key={category._id} value={category._id}>
+                  <div className="grid grid-cols-4 gap-6 mt-6">
+                    {products.data
+                      .filter(
+                        (product) => product.category._id === category._id
+                      )
+                      .map((product) => (
+                        <ProductCard product={product} key={product._id} />
+                      ))}
+                  </div>
+                </TabsContent>
+              );
+            })}
           </Tabs>
         </div>
       </section>
