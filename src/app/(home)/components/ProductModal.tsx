@@ -1,3 +1,4 @@
+"use client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,9 @@ import ToppingList from "./ToppingList";
 import { Product } from "@/lib/types";
 
 function ProductModal({ product }: { product: Product }) {
+  const handleAddToCart = () => {
+    console.log("adding to cart ");
+  };
   return (
     <Dialog>
       <DialogTrigger className="bg-orange-200 hover:bg-orange-300 text-orange-500 px-6 py-2 rounded-full shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150">
@@ -144,7 +148,7 @@ function ProductModal({ product }: { product: Product }) {
             <ToppingList />
             <div className="flex items-center justify-between mt-12">
               <span className="font-bold">₹400</span>
-              <Button>
+              <Button onClick={handleAddToCart}>
                 <ShoppingCart size={20} />
                 <span className="ml-2">Add to cart</span>
               </Button>
