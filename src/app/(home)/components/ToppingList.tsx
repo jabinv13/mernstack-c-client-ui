@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import ToppingCard, { Topping } from "./ToppingCard";
 
 const ToppingList = async () => {
@@ -26,14 +26,16 @@ const ToppingList = async () => {
       (element: Topping) => element.id === topping.id
     );
 
-    if (isAlreadyExists) {
-      setSelectedToppings((prev) =>
-        prev.filter((elm: Topping) => elm.id !== topping.id)
-      );
-      return;
-    }
+    startTransition(() => {
+      if (isAlreadyExists) {
+        setSelectedToppings((prev) =>
+          prev.filter((elm: Topping) => elm.id !== topping.id)
+        );
+        return;
+      }
 
-    setSelectedToppings((prev) => [...prev, topping]);
+      setSelectedToppings((prev) => [...prev, topping]);
+    });
   };
   return (
     <section className="mt-6">

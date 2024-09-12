@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ShoppingCart } from "lucide-react";
 import ToppingList from "./ToppingList";
 import { Product } from "@/lib/types";
+import { Suspense } from "react";
 
 function ProductModal({ product }: { product: Product }) {
   const handleAddToCart = () => {
@@ -145,7 +146,10 @@ function ProductModal({ product }: { product: Product }) {
               </RadioGroup>
             </div> */}
 
-            <ToppingList />
+            <Suspense fallback={"Wait we are loading toppings ..."}>
+              <ToppingList />
+            </Suspense>
+
             <div className="flex items-center justify-between mt-12">
               <span className="font-bold">₹400</span>
               <Button onClick={handleAddToCart}>
