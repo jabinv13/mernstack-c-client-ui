@@ -1,7 +1,7 @@
 import { startTransition, useEffect, useState } from "react";
 import ToppingCard, { Topping } from "./ToppingCard";
 
-const ToppingList = async () => {
+const ToppingList = () => {
   const [toppings, setToppings] = useState<Topping[]>([]);
   useEffect(() => {
     const fetchData = async () => {
