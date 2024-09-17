@@ -8,6 +8,7 @@ import { ShoppingCart } from "lucide-react";
 import ToppingList from "./ToppingList";
 import { Product } from "@/lib/types";
 import { startTransition, Suspense, useState } from "react";
+import { Topping } from "./ToppingCard";
 
 type chosenConfig = {
   [key: string]: string;
@@ -15,6 +16,24 @@ type chosenConfig = {
 
 function ProductModal({ product }: { product: Product }) {
   const [chosenCofig, setChosenCofig] = useState<chosenConfig>();
+  const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
+
+  const handleCheckBoxCheck = (topping: Topping) => {
+    const isAlreadyExists = selectedToppings.some(
+      (element: Topping) => element.id === topping.id
+    );
+
+    startTransition(() => {
+      if (isAlreadyExists) {
+        setSelectedToppings((prev) =>
+          prev.filter((elm: Topping) => elm.id !== topping.id)
+        );
+        return;
+      }
+
+      setSelectedToppings((prev) => [...prev, topping]);
+    });
+  };
 
   const handleRadioChange = (key: string, data: string) => {
     startTransition(() => {
@@ -165,7 +184,10 @@ function ProductModal({ product }: { product: Product }) {
             </div> */}
 
             <Suspense fallback={"Wait we are loading toppings ..."}>
-              <ToppingList />
+              <ToppingList
+                selectedToppings={selectedToppings}
+                handleCheckBoxCheck={handleCheckBoxCheck}
+              />
             </Suspense>
 
             <div className="flex items-center justify-between mt-12">
