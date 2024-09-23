@@ -12,13 +12,26 @@ import { Topping } from "./ToppingCard";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/features/cart/cartSlice";
 
-type chosenConfig = {
+type ChosenConfig = {
   [key: string]: string;
 };
 
 function ProductModal({ product }: { product: Product }) {
   const dispatch = useAppDispatch();
-  const [chosenCofig, setChosenCofig] = useState<chosenConfig>();
+
+  const defaultConfiguration = Object.entries(
+    product.category.priceConfiguration
+  )
+    .map(([key, value]) => {
+      return { [key]: value.availableOptions[0] };
+    })
+    .reduce((acc, curr) => ({ ...acc, ...curr }), {});
+
+  console.log("default ===", defaultConfiguration);
+
+  const [chosenConfig, setChosenConfig] = useState<ChosenConfig>(
+    defaultConfiguration as unknown as ChosenConfig
+  );
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
 
   const handleCheckBoxCheck = (topping: Topping) => {
@@ -40,7 +53,7 @@ function ProductModal({ product }: { product: Product }) {
 
   const handleRadioChange = (key: string, data: string) => {
     startTransition(() => {
-      setChosenCofig((prev) => {
+      setChosenConfig((prev) => {
         return { ...prev, [key]: data };
       });
     });
@@ -52,7 +65,7 @@ function ProductModal({ product }: { product: Product }) {
     const itemToAdd = {
       product,
       chosenConfiguration: {
-        priceConfiguration: chosenCofig!,
+        priceConfiguration: chosenConfig!,
         selectedToppings: selectedToppings,
       },
     };
