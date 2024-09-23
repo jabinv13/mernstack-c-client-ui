@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { ShoppingCart } from "lucide-react";
+import { CircleCheck, ShoppingCart } from "lucide-react";
 import ToppingList from "./ToppingList";
 import { Product } from "@/lib/types";
 import React, { startTransition, Suspense, useState } from "react";
@@ -12,13 +12,27 @@ import { Topping } from "./ToppingCard";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { addToCart, CartItem } from "@/lib/store/features/cart/cartSlice";
 import { hashTheItem } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 type ChosenConfig = {
   [key: string]: string;
 };
 
+const SucessToast = () => {
+  return (
+    <>
+      <div className="flex items-center gap-2">
+        <CircleCheck className="text-green-700" />
+        <span className="font-bold">Added to cart</span>
+      </div>
+    </>
+  );
+};
+
 function ProductModal({ product }: { product: Product }) {
+  const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
+
   const cartItems = useAppSelector((state) => state.cart.cartItems);
   const dispatch = useAppDispatch();
 
@@ -113,6 +127,10 @@ function ProductModal({ product }: { product: Product }) {
     dispatch(addToCart(itemToAdd));
     setSelectedToppings([]);
     setDialogOpen(false);
+    toast({
+      // @ts-ignore
+      title: <SucessToast />,
+    });
   };
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
