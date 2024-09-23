@@ -9,12 +9,15 @@ import ToppingList from "./ToppingList";
 import { Product } from "@/lib/types";
 import { startTransition, Suspense, useState } from "react";
 import { Topping } from "./ToppingCard";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { addToCart } from "@/lib/store/features/cart/cartSlice";
 
 type chosenConfig = {
   [key: string]: string;
 };
 
 function ProductModal({ product }: { product: Product }) {
+  const dispatch = useAppDispatch();
   const [chosenCofig, setChosenCofig] = useState<chosenConfig>();
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
 
@@ -43,8 +46,17 @@ function ProductModal({ product }: { product: Product }) {
     });
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (product: Product) => {
     console.log("adding to cart ");
+
+    const itemToAdd = {
+      product,
+      chosenConfiguration: {
+        priceConfiguration: chosenCofig!,
+        selectedToppings: selectedToppings,
+      },
+    };
+    dispatch(addToCart(itemToAdd));
   };
   return (
     <Dialog>
@@ -192,7 +204,7 @@ function ProductModal({ product }: { product: Product }) {
 
             <div className="flex items-center justify-between mt-12">
               <span className="font-bold">₹400</span>
-              <Button onClick={handleAddToCart}>
+              <Button onClick={() => handleAddToCart(product)}>
                 <ShoppingCart size={20} />
                 <span className="ml-2">Add to cart</span>
               </Button>
