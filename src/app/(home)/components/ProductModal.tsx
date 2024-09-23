@@ -224,12 +224,23 @@ function ProductModal({ product }: { product: Product }) {
               </RadioGroup>
             </div> */}
 
-            <Suspense fallback={"Wait we are loading toppings ..."}>
+            {/* <Suspense fallback={"Wait we are loading toppings ..."}>
               <ToppingList
                 selectedToppings={selectedToppings}
                 handleCheckBoxCheck={handleCheckBoxCheck}
               />
-            </Suspense>
+            </Suspense> */}
+
+            {/* todo: make this condition dynamic (Add hasToppings field in category document. (Backend))  */}
+            {/* {This solution is not scalable!!!} */}
+            {product.category.name === "Pizza" && (
+              <Suspense fallback={"Toppings loading..."}>
+                <ToppingList
+                  selectedToppings={selectedToppings}
+                  handleCheckBoxCheck={handleCheckBoxCheck}
+                />
+              </Suspense>
+            )}
 
             <div className="flex items-center justify-between mt-12">
               <span className="font-bold">{totalPrice}</span>
