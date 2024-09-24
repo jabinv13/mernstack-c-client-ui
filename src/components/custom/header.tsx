@@ -12,12 +12,19 @@ import { Tenant } from "@/lib/types";
 
 import dynamic from "next/dynamic";
 import TenantSelect from "./tenant-select";
+import { getSession } from "@/lib/session";
 
 const CartCounterWithoutSSR = dynamic(() => import("./cart-counter"), {
   ssr: false,
 });
 
 const Header = async () => {
+  const session = await getSession();
+
+  console.log(session);
+
+  // console.log(session);
+
   const tenantsResponse = await fetch(
     `${process.env.BACKEND_URL}/api/auth/tenants?perPage=100`,
     {
@@ -76,7 +83,7 @@ const Header = async () => {
             <Phone />
             <span>+91 9800 098 998</span>
           </div>
-          <Button size={"sm"}>Logout</Button>
+          <Button size={"sm"}>{session ? "Logout" : "Login"}</Button>
         </div>
       </nav>
     </header>
