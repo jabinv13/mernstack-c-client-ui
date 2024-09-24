@@ -2,7 +2,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Category, Product } from "@/lib/types";
 import ProductCard from "./ProductCard";
 
-async function ProductList() {
+async function ProductList({
+  searchParams,
+}: {
+  searchParams: { restaurantId: string };
+}) {
   const categoryResponse = await fetch(
     `${process.env.BACKEND_URL}/api/catalog/categories`,
     {
@@ -22,12 +26,11 @@ async function ProductList() {
 
   const productResponse = await fetch(
     //dynamical tennat id
-    `${process.env.BACKEND_URL}/api/catalog/products?Page=100&tenantId=9`
+    `${process.env.BACKEND_URL}/api/catalog/products?Page=100&tenantId=${searchParams.restaurantId}`
   );
 
   const products: { data: Product[] } = await productResponse.json();
 
-  console.log(products);
   return (
     <section>
       <div className="container py-12 ">

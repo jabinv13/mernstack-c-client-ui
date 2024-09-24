@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { Tenant } from "@/lib/types";
 
 import dynamic from "next/dynamic";
+import TenantSelect from "./tenant-select";
 
 const CartCounterWithoutSSR = dynamic(() => import("./cart-counter"), {
   ssr: false,
@@ -30,8 +31,6 @@ const Header = async () => {
     throw new Error("Failed to fetch Restaurants");
   }
   const restaurants: { data: Tenant[] } = await tenantsResponse.json();
-
-  console.log(restaurants);
 
   return (
     <header className="bg-white">
@@ -57,18 +56,7 @@ const Header = async () => {
               fill="#484848"
             />
           </svg>
-          <Select>
-            <SelectTrigger className="w-[180px] focus:ring-0">
-              <SelectValue placeholder="Select restaurant" />
-            </SelectTrigger>
-            <SelectContent>
-              {restaurants.data.map((restaurant) => (
-                <SelectItem key={restaurant.id} value={restaurant.id}>
-                  {restaurant.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <TenantSelect restaurants={restaurants} />
         </div>
         <div className="flex items-center gap-x-4">
           <ul className="flex items-center font-medium space-x-4">

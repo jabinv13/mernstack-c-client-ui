@@ -44,8 +44,6 @@ function ProductModal({ product }: { product: Product }) {
     })
     .reduce((acc, curr) => ({ ...acc, ...curr }), {});
 
-  console.log("default ===", defaultConfiguration);
-
   const [chosenConfig, setChosenConfig] = useState<ChosenConfig>(
     defaultConfiguration as unknown as ChosenConfig
   );

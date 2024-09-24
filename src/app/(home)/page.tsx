@@ -6,7 +6,11 @@ import { Category, Product } from "@/lib/types";
 import ProductList from "./components/ProductList";
 import { Suspense } from "react";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { restaurantId: string };
+}) {
   return (
     <>
       <section className="bg-white">
@@ -35,7 +39,7 @@ export default async function Home() {
       </section>
       {/* //todo:Add skeleton from shad */}
       <Suspense fallback={"Loading...."}>
-        <ProductList />
+        <ProductList searchParams={searchParams} />
       </Suspense>
     </>
   );
