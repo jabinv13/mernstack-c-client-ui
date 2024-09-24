@@ -23,6 +23,7 @@ import ToppingList from "./ToppingList";
 import { ShoppingCart } from "lucide-react";
 import { Product } from "@/lib/types";
 import ProductModal from "./ProductModal";
+import { getFromPrice } from "@/lib/utils";
 
 type PropTypes = { product: Product };
 
@@ -39,7 +40,7 @@ const ProductCard = ({ product }: PropTypes) => {
       <CardFooter className="flex items-center justify-between mt-4">
         <p>
           <span>From </span>
-          <span className="font-bold">₹{100}</span>
+          <span className="font-bold">₹{getFromPrice(product)}</span>
         </p>
         {/* dialog */}
         <ProductModal product={product} />
