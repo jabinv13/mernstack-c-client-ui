@@ -14,7 +14,6 @@ const TenantSelect = ({ restaurants }: { restaurants: { data: Tenant[] } }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  console.log(searchParams);
   const handleValueChange = (value: string) => {
     router.push(`/?restaurantId=${value}`);
   };
