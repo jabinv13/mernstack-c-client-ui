@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useFormState, useFormStatus } from "react-dom";
 import login from "@/lib/actions/login";
 import { LoaderCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 const SubmitButton = () => {
   const { pending } = useFormStatus();
@@ -34,7 +35,12 @@ const initialState = {
 
 // const initialState: void = undefined;
 const Login = () => {
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("return-to");
   const [state, formAction] = useFormState(login, initialState);
+  if (state.type === "success") {
+    window.location.href = returnTo ? returnTo : "/";
+  }
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <div className="flex items-center justify-center py-12">
