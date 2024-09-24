@@ -6,8 +6,26 @@ import Link from "next/link";
 import Image from "next/image";
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import login from "@/lib/actions/login";
+import { LoaderCircle } from "lucide-react";
+
+const SubmitButton = () => {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button>
+      {pending ? (
+        <div className="flex items-center gap-2">
+          <LoaderCircle className="animate-spin" />
+          <span>Please wait</span>
+        </div>
+      ) : (
+        "Login"
+      )}
+    </Button>
+  );
+};
 
 const initialState = {
   type: "",
@@ -52,7 +70,7 @@ const Login = () => {
                 </div>
                 <Input id="password" name="password" type="password" required />
               </div>
-              <Button>Login</Button>
+              <SubmitButton />
             </div>
           </form>
           <div className="mt-4 text-center text-sm">

@@ -35,7 +35,6 @@ export default async function login(prevState: any, formdata: FormData) {
 
     const c = response.headers.getSetCookie();
 
-    console.log(c);
     const accessToken = c.find((cookie) => cookie.includes("accessToken"));
     const refreshToken = c.find((cookie) => cookie.includes("refreshToken"));
     if (!accessToken || !refreshToken) {
@@ -47,8 +46,6 @@ export default async function login(prevState: any, formdata: FormData) {
 
     const parsedAccessToken = cookie.parse(accessToken);
     const parsedRefreshToken = cookie.parse(refreshToken);
-
-    console.log(parsedAccessToken, parsedRefreshToken);
 
     cookies().set({
       name: "accessToken",
