@@ -23,6 +23,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addAddress } from "@/lib/http/api";
 
 const formSchema = z.object({
   address: z.string().min(2, {
@@ -36,6 +38,29 @@ const AddAdress = ({ customerId }: { customerId: string | undefined }) => {
     resolver: zodResolver(formSchema),
   });
 
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["address", customerId],
+    mutationFn: async (address: string) => {
+      // todo: put proper check on customerId.
+      return await addAddress(customerId!, address);
+    },
+    onSuccess: () => {
+      addressForm.reset();
+      setIsModalOpen(false);
+      return queryClient.invalidateQueries({ queryKey: ["customer"] });
+    },
+  });
+
+  const handleAddressAdd = (e: React.FormEvent<HTMLFormElement>) => {
+    e.stopPropagation();
+
+    return addressForm.handleSubmit((data: z.infer<typeof formSchema>) => {
+      mutate(data.address);
+    })(e);
+  };
+
   // todo: Display error if any (useMutation -> isError)
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -47,7 +72,7 @@ const AddAdress = ({ customerId }: { customerId: string | undefined }) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <Form {...addressForm}>
-          <form>
+          <form onSubmit={handleAddressAdd}>
             <DialogHeader>
               <DialogTitle>Add Address</DialogTitle>
               <DialogDescription>
@@ -59,6 +84,7 @@ const AddAdress = ({ customerId }: { customerId: string | undefined }) => {
                 <Label htmlFor="address">Address</Label>
                 <FormField
                   name="address"
+                  control={addressForm.control}
                   render={({ field }) => {
                     return (
                       <FormItem>
@@ -73,7 +99,16 @@ const AddAdress = ({ customerId }: { customerId: string | undefined }) => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <span className="flex items-center gap-2">
+                    <LoaderCircle className="animate-spin" />
+                    <span>Please wait...</span>
+                  </span>
+                ) : (
+                  "Save changes"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
