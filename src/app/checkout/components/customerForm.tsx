@@ -103,6 +103,23 @@ const CustomerForm = () => {
                                     </Label>
                                   </div>
                                 </Card>
+
+                                <Card className="p-6">
+                                  <div className="flex items-center space-x-2">
+                                    <FormControl>
+                                      <RadioGroupItem
+                                        value="abcdefg villa"
+                                        id="abcdefg villa"
+                                      />
+                                    </FormControl>
+                                    <Label
+                                      htmlFor="abcdefg villa"
+                                      className="leading-normal"
+                                    >
+                                      abcdefg villa
+                                    </Label>
+                                  </div>
+                                </Card>
                               </RadioGroup>
                             </FormControl>
                           </FormItem>
