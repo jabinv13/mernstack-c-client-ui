@@ -1,7 +1,15 @@
 import React from "react";
 import CustomerForm from "./components/customerForm";
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
-function Checkout() {
+async function Checkout() {
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
   return <CustomerForm />;
 }
 
