@@ -18,6 +18,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Coins, CreditCard } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import OrderSummary from "./orderSummary";
+import { useQuery } from "@tanstack/react-query";
+import { Customer } from "@/lib/types";
+import { getCustomer } from "@/lib/http/api";
 
 const formSchema = z.object({
   address: z.string({ required_error: "Please select an address." }),
@@ -30,6 +33,19 @@ const CustomerForm = () => {
   const customerForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  const { data: customer, isLoading } = useQuery<Customer>({
+    queryKey: ["customer"],
+    queryFn: async () => {
+      return await getCustomer().then((res) => res.data);
+    },
+  });
+
+  if (isLoading) {
+    // todo: use Spinner/Loader or Shadcn Skeleton
+    return <h3>Loading...</h3>;
+  }
+
   return (
     <Form {...customerForm}>
       <form>
@@ -46,7 +62,7 @@ const CustomerForm = () => {
                     id="fname"
                     type="text"
                     className="w-full"
-                    defaultValue="Jabin"
+                    defaultValue={customer?.firstName}
                     disabled
                   />
                 </div>
@@ -56,7 +72,7 @@ const CustomerForm = () => {
                     id="lname"
                     type="text"
                     className="w-full"
-                    defaultValue="v"
+                    defaultValue={customer?.lastName}
                     disabled
                   />
                 </div>
@@ -66,7 +82,7 @@ const CustomerForm = () => {
                     id="email"
                     type="text"
                     className="w-full"
-                    defaultValue="jabinv3@gmail.com"
+                    defaultValue={customer?.email}
                     disabled
                   />
                 </div>
@@ -74,11 +90,12 @@ const CustomerForm = () => {
                   <div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="name">Address</Label>
-                      <AddAdress customerId="9" />
+                      <AddAdress customerId={customer?._id} />
                     </div>
 
                     <FormField
                       name="address"
+                      control={customerForm.control}
                       render={({ field }) => {
                         return (
                           <FormItem>
@@ -87,39 +104,26 @@ const CustomerForm = () => {
                                 onValueChange={field.onChange}
                                 className="grid grid-cols-2 gap-6 mt-2"
                               >
-                                <Card className="p-6">
-                                  <div className="flex items-center space-x-2">
-                                    <FormControl>
-                                      <RadioGroupItem
-                                        value="abcd villa"
-                                        id="abcd villa"
-                                      />
-                                    </FormControl>
-                                    <Label
-                                      htmlFor="abcd villa"
-                                      className="leading-normal"
-                                    >
-                                      abcd villa
-                                    </Label>
-                                  </div>
-                                </Card>
-
-                                <Card className="p-6">
-                                  <div className="flex items-center space-x-2">
-                                    <FormControl>
-                                      <RadioGroupItem
-                                        value="abcdefg villa"
-                                        id="abcdefg villa"
-                                      />
-                                    </FormControl>
-                                    <Label
-                                      htmlFor="abcdefg villa"
-                                      className="leading-normal"
-                                    >
-                                      abcdefg villa
-                                    </Label>
-                                  </div>
-                                </Card>
+                                {customer?.addresses.map((address) => {
+                                  return (
+                                    <Card className="p-6" key={address.text}>
+                                      <div className="flex items-center space-x-2">
+                                        <FormControl>
+                                          <RadioGroupItem
+                                            value={address.text}
+                                            id={address.text}
+                                          />
+                                        </FormControl>
+                                        <Label
+                                          htmlFor={address.text}
+                                          className="leading-normal"
+                                        >
+                                          {address.text}
+                                        </Label>
+                                      </div>
+                                    </Card>
+                                  );
+                                })}
                               </RadioGroup>
                             </FormControl>
                           </FormItem>

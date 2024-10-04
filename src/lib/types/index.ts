@@ -50,3 +50,16 @@ export type Product = {
   isPublish: boolean;
   createdAt: string;
 };
+
+export type Address = {
+  text: string;
+  isDefault: boolean;
+};
+
+export type Customer = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  addresses: Address[];
+};
