@@ -41,6 +41,10 @@ const CustomerForm = () => {
     },
   });
 
+  const handlePlaceOrder = (data: z.infer<typeof formSchema>) => {
+    console.log(data);
+  };
+
   if (isLoading) {
     // todo: use Spinner/Loader or Shadcn Skeleton
     return <h3>Loading...</h3>;
@@ -48,7 +52,7 @@ const CustomerForm = () => {
 
   return (
     <Form {...customerForm}>
-      <form>
+      <form onSubmit={customerForm.handleSubmit(handlePlaceOrder)}>
         <div className="flex container gap-6 mt-16">
           <Card className="w-3/5 border-none">
             <CardHeader>
@@ -126,6 +130,7 @@ const CustomerForm = () => {
                                 })}
                               </RadioGroup>
                             </FormControl>
+                            <FormMessage />
                           </FormItem>
                         );
                       }}
@@ -142,7 +147,7 @@ const CustomerForm = () => {
                         <FormItem>
                           <FormControl>
                             <RadioGroup
-                              // onValueChange={field.onChange}
+                              onValueChange={field.onChange}
                               className="flex gap-6"
                             >
                               <div className="w-36">
@@ -191,6 +196,7 @@ const CustomerForm = () => {
                   <Label htmlFor="fname">Comment</Label>
                   <FormField
                     name="comment"
+                    control={customerForm.control}
                     render={({ field }) => {
                       return (
                         <FormItem>

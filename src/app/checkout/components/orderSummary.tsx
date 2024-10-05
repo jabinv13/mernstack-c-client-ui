@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { verifyCoupon } from "@/lib/http/api";
 import { useAppSelector } from "@/lib/store/hooks";
+import { CouponCodeData } from "@/lib/types";
 import { getItemTotal } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
 // todo: Move this to the server, and calulate according to your business rules.
@@ -12,6 +16,7 @@ const DELIVERY_CHARGES = 100;
 
 const OrderSummary = () => {
   const couponCodeRef = React.useRef<HTMLInputElement>(null);
+  const searchParam = useSearchParams();
 
   const cart = useAppSelector((state) => state.cart.cartItems);
   const [discountPercentage, setDiscountPercentage] = React.useState(0);
@@ -40,6 +45,49 @@ const OrderSummary = () => {
   const grandWithoutDiscountTotal = React.useMemo(() => {
     return subTotal + taxesAmount + DELIVERY_CHARGES;
   }, [subTotal, taxesAmount, DELIVERY_CHARGES]);
+
+  // todo: display error isError, error
+  const { mutate } = useMutation({
+    mutationKey: ["couponCode"],
+    mutationFn: async () => {
+      if (!couponCodeRef.current) {
+        return;
+      }
+
+      const restaurantId = searchParam.get("restaurantId");
+
+      if (!restaurantId) {
+        return;
+      }
+
+      const data: CouponCodeData = {
+        code: couponCodeRef.current.value,
+        tenantId: restaurantId,
+      };
+      return await verifyCoupon(data).then((res) => res.data);
+    },
+    onSuccess: (data) => {
+      if (data.valid) {
+        setDiscountError("");
+
+        setDiscountPercentage(data.discount);
+        return;
+      }
+
+      console.log("svhsvbhsdbh");
+
+      setDiscountError("Coupon is invalid");
+
+      setDiscountPercentage(0);
+    },
+  });
+
+  const handleCouponValidation = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    mutate();
+  };
+
   return (
     <Card className="w-2/5 border-none h-auto self-start">
       <CardHeader>
@@ -76,7 +124,7 @@ const OrderSummary = () => {
             ) : null}
           </span>
         </div>
-
+        {discountError && <div className="text-red-500">{discountError}</div>}
         <div className="flex items-center gap-4">
           <Input
             id="coupon"
@@ -87,7 +135,9 @@ const OrderSummary = () => {
             ref={couponCodeRef}
           />
           {/* todo: add loading */}
-          <Button variant={"outline"}>Apply</Button>
+          <Button onClick={handleCouponValidation} variant={"outline"}>
+            Apply
+          </Button>
         </div>
 
         <div className="text-right mt-6">
