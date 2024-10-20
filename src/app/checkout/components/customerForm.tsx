@@ -37,6 +37,8 @@ const CustomerForm = () => {
     resolver: zodResolver(formSchema),
   });
 
+  const idempotencyKeyRef = React.useRef("");
+
   const searchParams = useSearchParams();
 
   const chosenCouponCode = React.useRef("");
@@ -53,7 +55,11 @@ const CustomerForm = () => {
   const { mutate } = useMutation({
     mutationKey: ["order"],
     mutationFn: async (data: OrderData) => {
-      const idempotencyKey = uuidv4() + customer?._id;
+      const idempotencyKey = idempotencyKeyRef.current
+        ? idempotencyKeyRef.current
+        : (idempotencyKeyRef.current = uuidv4() + customer?._id);
+
+      console.log("key:", idempotencyKey);
       await createOrder(data, idempotencyKey);
     },
     retry: 3,
@@ -79,9 +85,11 @@ const CustomerForm = () => {
       paymentMode: data.paymentMode,
     };
 
+    console.log("dbhdhsajdhshj");
+
     mutate(orderData);
 
-    console.log("Data:", orderData);
+    // console.log("Data:", orderData);
   };
 
   return (
