@@ -18,11 +18,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Coins, CreditCard } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import OrderSummary from "./orderSummary";
-import { useQuery } from "@tanstack/react-query";
-import { Customer } from "@/lib/types";
-import { getCustomer } from "@/lib/http/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Customer, OrderData } from "@/lib/types";
+import { createOrder, getCustomer } from "@/lib/http/api";
 import { useAppSelector } from "@/lib/store/hooks";
 import { useSearchParams } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
 
 const formSchema = z.object({
   address: z.string({ required_error: "Please select an address." }),
@@ -49,6 +50,19 @@ const CustomerForm = () => {
     },
   });
 
+  const { mutate } = useMutation({
+    mutationKey: ["order"],
+    mutationFn: async (data: OrderData) => {
+      const idempotencyKey = uuidv4() + customer?._id;
+      await createOrder(data, idempotencyKey);
+    },
+    retry: 3,
+  });
+
+  if (isLoading) {
+    // todo: use Spinner/Loader or Shadcn Skeleton
+    return <h3>Loading...</h3>;
+  }
   const handlePlaceOrder = (data: z.infer<typeof formSchema>) => {
     const tenantId = searchParams.get("restaurantId");
     if (!tenantId) {
@@ -65,13 +79,10 @@ const CustomerForm = () => {
       paymentMode: data.paymentMode,
     };
 
+    mutate(orderData);
+
     console.log("Data:", orderData);
   };
-
-  if (isLoading) {
-    // todo: use Spinner/Loader or Shadcn Skeleton
-    return <h3>Loading...</h3>;
-  }
 
   return (
     <Form {...customerForm}>
