@@ -60,9 +60,17 @@ const CustomerForm = () => {
         : (idempotencyKeyRef.current = uuidv4() + customer?._id);
 
       console.log("key:", idempotencyKey);
-      await createOrder(data, idempotencyKey);
+      return await createOrder(data, idempotencyKey).then((res) => res.data);
     },
     retry: 3,
+    onSuccess: (data: { paymentUrl: string | null }) => {
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      }
+      alert("Order placed successfully!");
+
+      //todo:clear the cart
+    },
   });
 
   if (isLoading) {
