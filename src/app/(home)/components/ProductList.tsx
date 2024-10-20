@@ -11,7 +11,7 @@ async function ProductList({
     `${process.env.BACKEND_URL}/api/catalog/categories`,
     {
       next: {
-        revalidate: 3600,
+        revalidate: 60,
       },
     }
   );
@@ -26,10 +26,17 @@ async function ProductList({
 
   const productResponse = await fetch(
     //dynamical tennat id
-    `${process.env.BACKEND_URL}/api/catalog/products?Page=100&tenantId=${searchParams.restaurantId}`
+    `${process.env.BACKEND_URL}/api/catalog/products?Page=100&tenantId=${searchParams.restaurantId}`,
+    {
+      next: {
+        revalidate: 60, // 1 hour
+      },
+    }
   );
 
   const products: { data: Product[] } = await productResponse.json();
+
+  console.log(products);
 
   return (
     <section>
