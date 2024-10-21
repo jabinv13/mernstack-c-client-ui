@@ -61,7 +61,6 @@ const CustomerForm = () => {
         ? idempotencyKeyRef.current
         : (idempotencyKeyRef.current = uuidv4() + customer?._id);
 
-      console.log("key:", idempotencyKey);
       return await createOrder(data, idempotencyKey).then((res) => res.data);
     },
     retry: 3,
