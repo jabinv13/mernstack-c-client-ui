@@ -21,9 +21,10 @@ import OrderSummary from "./orderSummary";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Customer, OrderData } from "@/lib/types";
 import { createOrder, getCustomer } from "@/lib/http/api";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { useSearchParams } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import { clearCart } from "@/lib/store/features/cart/cartSlice";
 
 const formSchema = z.object({
   address: z.string({ required_error: "Please select an address." }),
@@ -33,6 +34,7 @@ const formSchema = z.object({
   comment: z.any(),
 });
 const CustomerForm = () => {
+  const dispatch = useAppDispatch();
   const customerForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -68,6 +70,7 @@ const CustomerForm = () => {
         window.location.href = data.paymentUrl;
       }
       alert("Order placed successfully!");
+      dispatch(clearCart());
 
       //todo:clear the cart
     },
